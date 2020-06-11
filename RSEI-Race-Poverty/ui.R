@@ -1,33 +1,50 @@
-#
-# This is the user-interface definition of a Shiny web application. You can
-# run the application by clicking 'Run App' above.
-#
-# Find out more about building applications with Shiny here:
-#
-#    http://shiny.rstudio.com/
-#
-
 library(shiny)
+library(shinythemes)
 
-# Define UI for application that draws a histogram
-shinyUI(fluidPage(
-
-    # Application title
-    titlePanel("Old Faithful Geyser Data"),
-
-    # Sidebar with a slider input for number of bins
-    sidebarLayout(
-        sidebarPanel(
-            sliderInput("bins",
-                        "Number of bins:",
-                        min = 1,
-                        max = 50,
-                        value = 30)
-        ),
-
-        # Show a plot of the generated distribution
-        mainPanel(
-            plotOutput("distPlot")
-        )
-    )
-))
+shinyUI(
+    fluidPage(theme = shinytheme("sandstone"),
+    navbarPage("Investigating Patterns of Environmental Justice",
+        
+        tabPanel(title = "Information",
+                        
+                titlePanel("Exploring RSEI, Race, and Poverty Data"),
+                
+                h3("RSEI Data"),
+                
+                h3("Other Data")
+                     
+        ), # tabPanel1
+        
+        tabPanel(title = "Map",
+                 titlePanel(
+                     "Interactive Map!"
+                 ),
+                 sidebarLayout(
+                     sidebarPanel(
+                         
+                     ), # sidebar panel
+                     
+                     mainPanel(
+                     ) # main panel
+                 ) # sidebar layout
+        ), # tabPanel2
+        
+        tabPanel(title = "Data",
+                 titlePanel(
+                     "Look at the Data!"
+                 ),
+                 sidebarLayout(
+                     sidebarPanel(
+                         
+                     ), # sidebar panel
+                     
+                     mainPanel(
+                         
+                     ) # main panel
+                 ) # sidebar layout
+        ) # tabPanel3
+        
+    ) # navbarPage
+        
+    ) # fluidPage
+) # shiny UI
