@@ -1,13 +1,20 @@
 library(shiny)
 
+rsei <- readRDS("rsei.rds")
+
+states <- state.name[state.name != "Alaska" & state.name != "Hawaii"]
+  
+
 shinyServer(function(input, output) {
   
-  # MAP STUFF
+  
+  
+# MAP PANEL
   
   output$state_selector_map = renderUI({ #creates State select box object called in ui
     selectInput(inputId = "state_map", #name of input
                 label = "State:", #label displayed in ui
-                choices = as.character(unique(fips_codes$state_name)),
+                choices = as.character(states),
                 # calls unique values from the State column in the previously created table
                 selected = "North Carolina") #default choice (not required)
   })
@@ -20,9 +27,37 @@ shinyServer(function(input, output) {
     selectInput(inputId = "county_map", #name of input
                 label = "County:", #label displayed in ui
                 choices = unique(data_available), #calls list of available counties
-                selected = unique(data_available)[1])
+                selected = unique(data_available)[1],
+                multiple = TRUE)
   })
   
+  
+  output$var_selector_map_rsei = renderUI({#creates County select box object called in ui
+    
+    var_names_rsei = c("toxconc_blckgrp", "score_blckgrp", "scorecancer_blckgrp", 
+                  "scorenoncancer_blckgrp")
+    
+    selectInput(inputId = "vars_map_rsei", #name of input
+                label = "RSEI Variable:", #label displayed in ui
+                choices = unique(var_names_rsei), #calls list of available counties
+                selected = unique(var_names_rsei)[1],
+                multiple = F)
+  })
+    
+    
+  
+    output$var_selector_map_acs = renderUI({#creates County select box object called in ui
+      
+      var_names_acs = c("median_hh_inc", "pct_white", 
+                    "pct_black", "pct_natam", "pct_hisp", "pct_inc_less10k", "pct_inc_less20k")
+      
+      selectInput(inputId = "vars_map_acs", #name of input
+                  label = "ACS Variable:", #label displayed in ui
+                  choices = unique(var_names_acs), #calls list of available counties
+                  selected = unique(var_names_acs)[1],
+                  multiple = F)
+    })
+    
   data_map <- eventReactive(input$getdata_map, {
     get_acs(geography = "block group", 
             variables = c(n_total = "B02001_001", n_white = "B02001_002",
@@ -55,7 +90,7 @@ shinyServer(function(input, output) {
   output$rseimap <- renderLeaflet({
     withProgress(message = "Making map", detail = "Getting data", value = 0.4, {
       EJMap <- data_map()
-      m <- mapview(EJMap, zcol = "n_white") + mapview(EJMap, zcol = "pct_white")
+      m <- mapview(EJMap, zcol = input$vars_map_rsei) + mapview(EJMap, zcol = input$vars_map_acs)
       incProgress(0.5, detail = "Last touches")
       m@map
     })
@@ -69,7 +104,7 @@ shinyServer(function(input, output) {
   
   
   
-  # DATA TABLE STUFF
+# DATA TABLE PANEL
   
   
   output$state_selector_dt = renderUI({ #creates State select box object called in ui
@@ -89,6 +124,19 @@ shinyServer(function(input, output) {
                 label = "County:", #label displayed in ui
                 choices = unique(data_available), #calls list of available counties
                 selected = unique(data_available)[1])
+  })
+  
+  output$var_selector_dt = renderUI({#creates County select box object called in ui
+    
+    var_names = c("name", "toxconc_blckgrp", "score_blckgrp", "scorecancer_blckgrp", 
+                  "scorenoncancer_blckgrp", "median_hh_inc", "pct_white", 
+                  "pct_black", "pct_natam", "pct_hisp", "pct_inc_less10k", "pct_inc_less20k")
+    
+    selectInput(inputId = "vars_dt", #name of input
+                label = "Variables:", #label displayed in ui
+                choices = unique(var_names), #calls list of available counties
+                selected = unique(var_names)[1],
+                multiple = T)
   })
   
   data_dt <- eventReactive(input$getdata_dt, {
@@ -117,10 +165,12 @@ shinyServer(function(input, output) {
                          .,
                          by = c("blckgrp" = "geoid"))
   })
-
+  
+  
   output$table <- renderDataTable({
     
-    display_dt <- data_dt()
+    display_dt <- data_dt() %>% 
+      select(input$vars_dt)
     datatable(display_dt)
     
   })
