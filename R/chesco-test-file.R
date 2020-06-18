@@ -1,10 +1,12 @@
 library(tidycensus)
 library(tidyverse)
 library(leaflet)
+library(mapview)
 
 # get acs data
 
 census_api_key("691c56c505ab23560453873cc6768f41206683b4")
+data(fips_codes)
 
 # vars <- load_variables(2018, "acs5", cache = TRUE)
 
@@ -14,8 +16,8 @@ chesco <- get_acs(geography = "block group",
                               n_hisp  = "B03003_003", median_hh_inc = "B19013_001", 
                               n_inc_less10k = "B19001_002", n_inc_10k_14k = "B19001_003",
                               n_inc_15k_19k = "B19001_004"),
-                county = "Delaware", 
-                state = "PA", 
+                county = "Chester County", 
+                state = "Pennsylvania", 
                 geometry = TRUE) %>%  
               #  show_call = T) %>% 
   janitor::clean_names() %>%
@@ -43,19 +45,17 @@ rseichesco <- inner_join(rsei,
 
 
 # plot
-library(leaflet)
-
-
-qpal <- colorQuantile("magma", rseichesco$n_total, n = 7)
-
-leaflet(rseichesco) %>% 
-  addPolygons(color = ~qpal(n_total), weight = 1, smoothFactor = 0.5,
-              opacity = 1.0, fillOpacity = 0.8, stroke = F,
-              highlightOptions = highlightOptions(color = "white", weight = 2,
-                                                  bringToFront = TRUE)) %>% 
-  addProviderTiles(providers$CartoDB.Positron)
-
-library(mapview)
+# library(leaflet)
+# 
+# 
+# qpal <- colorQuantile("magma", rseichesco$n_total, n = 7)
+# 
+# leaflet(rseichesco) %>% 
+#   addPolygons(color = ~qpal(n_total), weight = 1, smoothFactor = 0.5,
+#               opacity = 1.0, fillOpacity = 0.8, stroke = F,
+#               highlightOptions = highlightOptions(color = "white", weight = 2,
+#                                                   bringToFront = TRUE)) %>% 
+#   addProviderTiles(providers$CartoDB.Positron)
 
 mapview(rseichesco, zcol = c("score_blckgrp"),
         alpha.regions = 0.4) +
@@ -63,3 +63,4 @@ mapview(rseichesco, zcol = c("score_blckgrp"),
           alpha.regions = 0.3, col.regions = viridisLite::inferno(5, direction = -1))
 
 # light areas indicate high EJ risk
+

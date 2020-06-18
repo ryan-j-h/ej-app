@@ -86,5 +86,3 @@ fst::write.fst(rsei_blckgrp, "data/rsei_blckgrp.fst", 100)
 # xwalk <- readRDS("data/xwalk_raw.rds")
 # fst::write.fst(xwalk, "data/xwalk_raw.fst")
 # xwalk <- fst::read.fst("data/xwalk_raw.fst")
-
-
