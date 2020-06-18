@@ -16,7 +16,7 @@ chesco <- get_acs(geography = "block group",
                               n_hisp  = "B03003_003", median_hh_inc = "B19013_001", 
                               n_inc_less10k = "B19001_002", n_inc_10k_14k = "B19001_003",
                               n_inc_15k_19k = "B19001_004"),
-                county = "Chester County", 
+                county = "Philadelphia County", 
                 state = "Pennsylvania", 
                 geometry = TRUE) %>%  
               #  show_call = T) %>% 
@@ -61,6 +61,10 @@ mapview(rseichesco, zcol = c("score_blckgrp"),
         alpha.regions = 0.4) +
   mapview(rseichesco, zcol = c("pct_white"),
           alpha.regions = 0.3, col.regions = viridisLite::inferno(5, direction = -1))
+
+# col.regions = heat.colors
+# col.regions = viridisLite::inferno(5, direction = -1)
+# col.regions = RColorBrewer::brewer.pal(20, "Blues")
 
 # light areas indicate high EJ risk
 

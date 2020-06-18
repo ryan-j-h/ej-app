@@ -32,32 +32,6 @@ shinyServer(function(input, output) {
   })
   
   
-  output$var_selector_map_rsei = renderUI({#creates County select box object called in ui
-    
-    var_names_rsei = c("toxconc_blckgrp", "score_blckgrp", "scorecancer_blckgrp", 
-                  "scorenoncancer_blckgrp")
-    
-    selectInput(inputId = "vars_map_rsei", #name of input
-                label = "RSEI Variable:", #label displayed in ui
-                choices = unique(var_names_rsei), #calls list of available counties
-                selected = unique(var_names_rsei)[1],
-                multiple = F)
-  })
-    
-    
-  
-    output$var_selector_map_acs = renderUI({#creates County select box object called in ui
-      
-      var_names_acs = c("median_hh_inc", "pct_white", 
-                    "pct_black", "pct_natam", "pct_hisp", "pct_inc_less10k", "pct_inc_less20k")
-      
-      selectInput(inputId = "vars_map_acs", #name of input
-                  label = "ACS Variable:", #label displayed in ui
-                  choices = unique(var_names_acs), #calls list of available counties
-                  selected = unique(var_names_acs)[1],
-                  multiple = F)
-    })
-    
   data_map <- eventReactive(input$getdata_map, {
     get_acs(geography = "block group", 
             variables = c(n_total = "B02001_001", n_white = "B02001_002",
@@ -87,17 +61,83 @@ shinyServer(function(input, output) {
       sf::st_transform(4326)
   })
   
+  
+  
+  output$var_selector_map_rsei = renderUI({#creates County select box object called in ui
+    
+    var_names_rsei = c("toxconc_blckgrp", "score_blckgrp", "scorecancer_blckgrp", 
+                  "scorenoncancer_blckgrp")
+    
+    selectInput(inputId = "vars_map_rsei", #name of input
+                label = "RSEI Variable:", #label displayed in ui
+                choices = unique(var_names_rsei), #calls list of available counties
+                selected = unique(var_names_rsei)[1],
+                multiple = F)
+  })
+  
+  output$var_selector_map_acs = renderUI({#creates County select box object called in ui
+    
+    var_names_acs = c("median_hh_inc", "pct_white", 
+                      "pct_black", "pct_natam", "pct_hisp", "pct_inc_less10k", "pct_inc_less20k")
+    
+    selectInput(inputId = "vars_map_acs", #name of input
+                label = "ACS Variable:", #label displayed in ui
+                choices = unique(var_names_acs), #calls list of available counties
+                selected = unique(var_names_acs)[1],
+                multiple = F)
+  })
+  
+  vars_rsei <- eventReactive(input$assignattr, {
+    input$vars_map_rsei
+  })
+  
+  vars_acs <- eventReactive(input$assignattr, {
+    input$vars_map_acs
+  })
+  
+  opac_rsei <- eventReactive(input$assignattr, {
+    input$alpha_rsei
+  })
+  
+  opac_acs <- eventReactive(input$assignattr, {
+    input$alpha_acs
+  })
+  
+  observeEvent(opac_rsei(), {
+    if (!(opac_rsei() >= 0 & opac_rsei() <= 1)){
+      shinyalert(title = "Invalid RSEI Opacity!",
+                 text = "Make sure the number is between zero and one.",
+                 type = "error")
+    }
+    
+    })
+  
+    
+    observeEvent(opac_acs(), {
+      if (!(opac_acs() >= 0 & opac_acs() <= 1)) {
+        shinyalert(title = "Invalid ACS Opacity!",
+                   text = "Make sure the number is between zero and one.",
+                   type = "error")
+        
+      }
+    })
+    
+
+  
   output$rseimap <- renderLeaflet({
     withProgress(message = "Making map", detail = "Getting data", value = 0.4, {
       EJMap <- data_map()
-      m <- mapview(EJMap, zcol = input$vars_map_rsei) + mapview(EJMap, zcol = input$vars_map_acs)
-      incProgress(0.5, detail = "Last touches")
+      m <- mapview(EJMap, zcol = vars_rsei(), alpha.regions = opac_rsei()) + 
+        mapview(EJMap, zcol = vars_acs(), 
+                col.regions = heat.colors(5, rev = ifelse(vars_acs() %in% c("pct_white", "median_hh_inc"), T, F)), 
+                alpha.regions = opac_acs())
+      incProgress(0.5, detail = "Plotting data")
       m@map
     })
     
   })
   
-  
+ # col.regions = viridisLite::inferno(5, direction = ifelse(input$vars_map_acs %in% c("pct_white", "median_hh_inc"), -1, 1)), 
   
   
   
