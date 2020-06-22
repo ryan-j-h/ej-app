@@ -181,7 +181,8 @@ shinyUI(
                                         line-height: 1em;}"))
                     ), 
                     
-                    h6("note: you must pull data before creating a map and each time you wish to change geography"),
+                    h6("note: you must pull data before creating a map and
+                       each time you wish to change geography"),
                     
                     hr(),
                     
