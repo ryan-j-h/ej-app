@@ -14,23 +14,15 @@ data(fips_codes)
 shinyUI(
     fluidPage(theme = shinytheme("sandstone"),
               useShinyalert(),
-              tags$head(
-                  tags$style(HTML("hr {border-top: 1px solid #000000;}"))
-              ),
-              tags$head(tags$style(HTML('
-                    h1, h2, h3 {
-                        font-weight: bold;
-                        
-                        text-transform: uppercase;
-                    }
-                '))),
               
-              #.navbar-brand,
-              # font-variant: small-caps;
+              # format horizontal rule and headers
+              tags$head(tags$style(HTML("hr {border-top: 1px solid #000000;}"))),
+              tags$head(tags$style(HTML('h1, h2, h3 {font-weight: bold; 
+                                                     text-transform: uppercase;}'))),
               
     navbarPage("Exploring Patterns of Environmental Injustice",
         
-        tabPanel(title = "Information",
+        tabPanel(title = "About the Data",
                         
             titlePanel("Mapping Pollution, Race, and Income Data"),
                 
@@ -97,36 +89,42 @@ shinyUI(
             
             p()
                      
-        ), # tabPanel1
+        ), # tabPanel Info
         
         tabPanel(title = "Map",
             titlePanel("Create a Map"),
             sidebarLayout(
                 sidebarPanel(width = 3, 
                     
-                    htmlOutput("state_selector_map"),#add selectinput boxs
-                    htmlOutput("county_selector_map"), # from objects created in server
+                    # select geography
+                    
+                    htmlOutput("state_selector_map"), # add input from server
+                    htmlOutput("county_selector_map"), # add input from server
                     
                     br(),
 
+                    # create button
                     div(align = "right",
                         actionButton(inputId = "getdata_map",
                             label = strong("Pull data"))),
                     
+                    # add and format note
                     tags$head(
                         tags$style(HTML("h6 {font-size: 12px; text-align: right; line-height: 0.5em;}"))
-                    ),
+                    ), 
                     
                     h6("note: you must pull data before creating a map"), h6("and each time you wish to change geography"),
                     
                     hr(),
                     
+                    # select variables
                     htmlOutput("var_selector_map_rsei"),
                                  
                     htmlOutput("var_selector_map_acs"),
                 
                     br(),
                     
+                    # create button
                     div(align = "right",
                         actionButton(inputId = "assignattr",
                                      label = strong("Create map")))
@@ -135,83 +133,88 @@ shinyUI(
                      
                 mainPanel(
                     
+                    # create rsei map
                     column(
                         width = 6, 
                         tags$style(type = "text/css", "#rseimap {height: calc(90vh - 80px) !important;}"),
                         leafletOutput("rseimap")
                     ),
                     
+                    # create acs map
                     column(
                         width = 6,
                         tags$style(type = "text/css", "#acsmap {height: calc(90vh - 80px) !important;}"),
                         leafletOutput("acsmap")
                     )
-                    
-                    
-                    
                     ) # main panel
                  ) # sidebar layout
-        ), # tabPanel2
+        ), # tabPanel Map
         
-        tabPanel(title = "Data",
+        tabPanel(title = "Table",
             titlePanel("Look at the Data"),
             sidebarLayout(
                 sidebarPanel(width = 3,
-                         
-                    htmlOutput("state_selector_dt"), #add selectinput boxs
-                    htmlOutput("county_selector_dt"), # from objects created in server
+                    
+                    # select geography   
+                    htmlOutput("state_selector_dt"), # add input from server
+                    htmlOutput("county_selector_dt"), # add input from server
                     
                     br(),
                     
+                    # create button
                     div(align = "right",
                         actionButton(inputId = "getdata_dt",
                                      label = strong("Pull data"))),
                     
                     hr(),
                     
-                    htmlOutput("var_selector_dt")
+                    # select variables
+                    htmlOutput("var_selector_dt") # add input from server
                     
                     
                 ), # sidebar panel
                      
                 mainPanel(
                     
+                    # output table
                     dataTableOutput(outputId = "table")
                          
                 ) # main panel
             ) # sidebar layout
-        ), # tabPanel3
+        ), # tabPanel Data
         
         tabPanel(title = "Model",
             titlePanel("Create Model"),
             sidebarLayout(
                 sidebarPanel(width = 3, 
-                             
-                    htmlOutput("state_selector_tr"), #add selectinput boxs
-                    htmlOutput("county_selector_tr"), # from objects created in server
+                    
+                    # select geography         
+                    htmlOutput("state_selector_tr"), # add input from server
+                    htmlOutput("county_selector_tr"), # add input from server
                     
                     br(),
                     
+                    # create button
                     div(align = "right",
                         actionButton(inputId = "getdata_tr",
                                      label = strong("Pull data"))),
                     
                     hr(),
                     
-                    htmlOutput("var_selector_tr_rsei"),
-                    htmlOutput("var_selector_tr_acs")
+                    # select variables
+                    htmlOutput("var_selector_tr_rsei"), # add input from server
+                    htmlOutput("var_selector_tr_acs") # add input from server
                     
                 ), # sidebar panel
                 mainPanel(
                     
+                    # create model
                     tableOutput(outputId = "lmtable")
                     
                     
                 ) # main panel
             ) # sidebarLayout
-            
-            
-        ) # tabPanel4
+        ) # tabPanel Model
         
         
     ) # navbarPage
