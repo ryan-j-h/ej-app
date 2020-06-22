@@ -23,7 +23,8 @@ shinyServer(function(input, output) {
   output$county_selector_map <- renderUI({
     
     # create a list of counties in selected state
-    data_available <- fips_codes[fips_codes$state_name == input$state_map, "county"]
+    data_available <- fips_codes[fips_codes$state_name == input$state_map, 
+                                 "county"]
 
     selectInput(inputId = "county_map",
                 label = "County:",
@@ -40,7 +41,8 @@ shinyServer(function(input, output) {
             variables = c(n_total = "B02001_001", n_white = "B02001_002",
                           n_black = "B02001_003", n_natam = "B02001_004",
                           n_hisp  = "B03003_003", median_hh_inc = "B19013_001",
-                          n_inc_less10k = "B19001_002", n_inc_10k_14k = "B19001_003",
+                          n_inc_less10k = "B19001_002", 
+                          n_inc_10k_14k = "B19001_003",
                           n_inc_15k_19k = "B19001_004"),
             county = input$county_map,
             state = input$state_map,
@@ -60,7 +62,8 @@ shinyServer(function(input, output) {
              pct_inc_less10k = n_inc_less10k/n_total,
              pct_inc_10k_14k = n_inc_10k_14k/n_total,
              pct_inc_15k_19k = n_inc_15k_19k/n_total,
-             pct_inc_less20k = (n_inc_less10k + n_inc_10k_14k + n_inc_15k_19k)/n_total) %>%
+             pct_inc_less20k = (n_inc_less10k + n_inc_10k_14k + 
+                                  n_inc_15k_19k)/n_total) %>%
       
       # join with rsei data
       inner_join(rsei,
@@ -77,8 +80,8 @@ shinyServer(function(input, output) {
   output$var_selector_map_rsei <- renderUI({
     
     # create vector of rsei variables
-    var_names_rsei <- c("toxconc_blckgrp", "score_blckgrp", "scorecancer_blckgrp", 
-                  "scorenoncancer_blckgrp")
+    var_names_rsei <- c("toxconc_blckgrp", "score_blckgrp", 
+                        "scorecancer_blckgrp", "scorenoncancer_blckgrp")
     
     selectInput(inputId = "vars_map_rsei",
                 label = "RSEI Variable:",
@@ -88,16 +91,16 @@ shinyServer(function(input, output) {
   })
   
   # create acs variable input
-  output$var_selector_map_acs <- renderUI({#creates County select box object called in ui
+  output$var_selector_map_acs <- renderUI({
     
     # create vector of acs variables
-    var_names_acs <- c("median_hh_inc", "pct_white", 
-                      "pct_black", "pct_natam", "pct_hisp", "pct_inc_less10k", "pct_inc_less20k")
+    var_names_acs <- c("median_hh_inc", "pct_white", "pct_black", "pct_natam", 
+                       "pct_hisp", "pct_inc_less10k", "pct_inc_less20k")
     
     selectInput(inputId = "vars_map_acs",
                 label = "ACS Variable:",
                 choices = unique(var_names_acs),
-                selected = unique(var_names_acs)[7], # default is pct_inc_less20k
+                selected = unique(var_names_acs)[7], # default pct_inc_less20k
                 multiple = F)
   })
   
@@ -113,7 +116,8 @@ shinyServer(function(input, output) {
   # output rsei map
   output$rseimap <- renderLeaflet({
     
-    withProgress(message = "Making map", detail = "Getting data", value = 0.4, { # progress bar
+    withProgress(message = "Making map", detail = "Getting data", 
+                 value = 0.4, { # progress bar
       RSEIMap <- data_map()
       m <- mapview(RSEIMap, zcol = vars_rsei())
       incProgress(0.5, detail = "Plotting data") # update progress bar
@@ -123,8 +127,10 @@ shinyServer(function(input, output) {
   })
   
   # other color options
-  # col.regions = viridisLite::inferno(5, direction = ifelse(input$vars_map_acs %in% c("pct_white", "median_hh_inc"), -1, 1)), 
-  # col.regions = heat.colors(5, rev = ifelse(vars_acs() %in% c("pct_white", "median_hh_inc"), T, F)
+  # col.regions = viridisLite::inferno(5, direction = 
+        #ifelse(input$vars_map_acs %in% c("pct_white", "median_hh_inc"), -1, 1)), 
+  # col.regions = heat.colors(5, rev = ifelse(vars_acs() %in% 
+        # c("pct_white", "median_hh_inc"), T, F)
   # col.regions = gray.colors(5, start = 0, end = 0.9)
   # col.regions = heat.colors(5, rev = T)
   
@@ -132,10 +138,18 @@ shinyServer(function(input, output) {
   # output acs map
   output$acsmap <- renderLeaflet({
     
-    withProgress(message = "Making map", detail = "Getting data", value = 0.4, { # progress bar
+    withProgress(message = "Making map", detail = "Getting data", 
+                 value = 0.4, { # progress bar
       ACSMap <- data_map()
       m2 <- mapview(ACSMap, zcol = vars_acs(), 
-                    col.regions = viridisLite::viridis(5, direction = ifelse(input$vars_map_acs %in% c("pct_white", "median_hh_inc"), -1, 1))) # make direction consistent so that lighter is a more 'vulnerable' population
+                    
+  # make colors consistent so that lighter is a more 'vulnerable' population
+                    
+                    col.regions = viridisLite::viridis(5, 
+                          direction = ifelse(input$vars_map_acs %in% 
+                                               c("pct_white", "median_hh_inc"),
+                                             -1, 1))) 
+      
       incProgress(0.5, detail = "Plotting data") # update progress bar
       m2@map
     })
@@ -162,10 +176,11 @@ shinyServer(function(input, output) {
   })
   
   # create county input
-  output$county_selector_dt <- renderUI({#creates County select box object called in ui
+  output$county_selector_dt <- renderUI({
     
     # create a list of counties in selected state
-    data_available <- fips_codes[fips_codes$state_name == input$state_dt, "county"]
+    data_available <- fips_codes[fips_codes$state_name == input$state_dt, 
+                                 "county"]
 
     selectInput(inputId = "county_dt",
                 label = "County:", 
@@ -177,9 +192,10 @@ shinyServer(function(input, output) {
   output$var_selector_dt <- renderUI({
     
     # create vector of variable names
-    var_names <- c("name", "toxconc_blckgrp", "score_blckgrp", "scorecancer_blckgrp", 
-                  "scorenoncancer_blckgrp", "median_hh_inc", "pct_white", 
-                  "pct_black", "pct_natam", "pct_hisp", "pct_inc_less10k", "pct_inc_less20k")
+    var_names <- c("name", "toxconc_blckgrp", "score_blckgrp", 
+                   "scorecancer_blckgrp", "scorenoncancer_blckgrp", 
+                   "median_hh_inc", "pct_white", "pct_black", "pct_natam", 
+                   "pct_hisp", "pct_inc_less10k", "pct_inc_less20k")
     
     selectInput(inputId = "vars_dt",
                 label = "Variables:", 
@@ -197,14 +213,16 @@ shinyServer(function(input, output) {
             variables = c(n_total = "B02001_001", n_white = "B02001_002",
                           n_black = "B02001_003", n_natam = "B02001_004",
                           n_hisp  = "B03003_003", median_hh_inc = "B19013_001",
-                          n_inc_less10k = "B19001_002", n_inc_10k_14k = "B19001_003",
+                          n_inc_less10k = "B19001_002", 
+                          n_inc_10k_14k = "B19001_003",
                           n_inc_15k_19k = "B19001_004"),
             county = input$county_dt,
             state = input$state_dt) %>%
       janitor::clean_names() %>%
       as_tibble() %>% # convert from sf to tibble
       select(-moe) %>% # select only estimates
-      pivot_wider(names_from = variable, values_from = estimate) %>% # one column per variable
+      pivot_wider(names_from = variable, 
+                  values_from = estimate) %>% # one column per variable
       
       # calculate percents 
       mutate(pct_white = n_white/n_total,
@@ -214,7 +232,8 @@ shinyServer(function(input, output) {
              pct_inc_less10k = n_inc_less10k/n_total,
              pct_inc_10k_14k = n_inc_10k_14k/n_total,
              pct_inc_15k_19k = n_inc_15k_19k/n_total,
-             pct_inc_less20k = (n_inc_less10k + n_inc_10k_14k + n_inc_15k_19k)/n_total) %>%
+             pct_inc_less20k = (n_inc_less10k + n_inc_10k_14k + 
+                                  n_inc_15k_19k)/n_total) %>%
               
       # join with rsei
       inner_join(rsei, ., by = c("blckgrp" = "geoid"))
@@ -238,7 +257,7 @@ shinyServer(function(input, output) {
 # MODEL PANEL  
   
   # create state input
-  output$state_selector_tr = renderUI({
+  output$state_selector_tr <- renderUI({
     selectInput(inputId = "state_tr",
                 label = "State:", #label displayed in ui
                 choices = as.character(states),
@@ -246,10 +265,11 @@ shinyServer(function(input, output) {
   })
   
   # create county input
-  output$county_selector_tr = renderUI({
+  output$county_selector_tr <- renderUI({
     
     # create list of counties in selected state
-    data_available = fips_codes[fips_codes$state_name == input$state_tr, "county"]
+    data_available <- fips_codes[fips_codes$state_name == input$state_tr, 
+                                "county"]
     
     selectInput(inputId = "county_tr",
                 label = "County:", 
@@ -267,14 +287,16 @@ shinyServer(function(input, output) {
             variables = c(n_total = "B02001_001", n_white = "B02001_002",
                           n_black = "B02001_003", n_natam = "B02001_004",
                           n_hisp  = "B03003_003", median_hh_inc = "B19013_001",
-                          n_inc_less10k = "B19001_002", n_inc_10k_14k = "B19001_003",
+                          n_inc_less10k = "B19001_002", 
+                          n_inc_10k_14k = "B19001_003",
                           n_inc_15k_19k = "B19001_004"),
             county = input$county_tr,
             state = input$state_tr) %>%
       janitor::clean_names() %>%
       as_tibble() %>% # convert from sf to tibble
       select(-moe) %>% # select only estimates
-      pivot_wider(names_from = variable, values_from = estimate) %>% # one column per variable
+      pivot_wider(names_from = variable, 
+                  values_from = estimate) %>% # one column per variable
       
       # calculate percents
       mutate(pct_white = n_white/n_total, # calculate percents
@@ -284,7 +306,8 @@ shinyServer(function(input, output) {
              pct_inc_less10k = n_inc_less10k/n_total,
              pct_inc_10k_14k = n_inc_10k_14k/n_total,
              pct_inc_15k_19k = n_inc_15k_19k/n_total,
-             pct_inc_less20k = (n_inc_less10k + n_inc_10k_14k + n_inc_15k_19k)/n_total) %>%
+             pct_inc_less20k = (n_inc_less10k + n_inc_10k_14k + 
+                                  n_inc_15k_19k)/n_total) %>%
       
       # join with rsei
       inner_join(rsei,
@@ -296,8 +319,8 @@ shinyServer(function(input, output) {
   output$var_selector_tr_rsei <- renderUI({
     
     # create vector of rsei variables
-    var_names_rsei <- c("toxconc_blckgrp", "score_blckgrp", "scorecancer_blckgrp", 
-                       "scorenoncancer_blckgrp")
+    var_names_rsei <- c("toxconc_blckgrp", "score_blckgrp", 
+                        "scorecancer_blckgrp", "scorenoncancer_blckgrp")
     
     selectInput(inputId = "vars_tr_rsei",
                 label = "RSEI Response Variable:",
@@ -310,13 +333,13 @@ shinyServer(function(input, output) {
   output$var_selector_tr_acs <- renderUI({
     
     # create vector of acs variables
-    var_names_acs <- c("median_hh_inc", "pct_white", 
-                      "pct_black", "pct_natam", "pct_hisp", "pct_inc_less10k", "pct_inc_less20k")
+    var_names_acs <- c("median_hh_inc", "pct_white", "pct_black", "pct_natam", 
+                       "pct_hisp", "pct_inc_less10k", "pct_inc_less20k")
     
     selectInput(inputId = "vars_tr_acs", 
                 label = "ACS Predictor Variables:",
                 choices = unique(var_names_acs),
-                selected = unique(var_names_acs)[7], # default is pct_inc_less20k
+                selected = unique(var_names_acs)[7], # default pct_inc_less20k
                 multiple = T)
   })
   
