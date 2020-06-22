@@ -68,3 +68,9 @@ mapview(rseichesco, zcol = c("score_blckgrp"),
 
 # light areas indicate high EJ risk
 
+
+model <- lm(score_blckgrp ~ median_hh_inc, 
+            data = rseichesco)
+
+broom::tidy(model, conf.int = TRUE)
+

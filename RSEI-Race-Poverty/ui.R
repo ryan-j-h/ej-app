@@ -6,6 +6,7 @@ library(tidycensus)
 library(DT)
 library(mapview)
 library(leaflet)
+library(broom)
 
 census_api_key("691c56c505ab23560453873cc6768f41206683b4")
 data(fips_codes)
@@ -35,51 +36,39 @@ shinyUI(
                 
             h3("Pollution Data: Risk-Screening Environmental Indicators (RSEI)"),
             
-            p("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc congue nisl vel magna viverra, 
-            in condimentum purus convallis. Nam ultrices nunc efficitur lectus rutrum pretium. Nulla facilisi. 
-            Sed nec consequat urna. Phasellus pretium tortor vel porta vehicula. Vivamus ornare imperdiet erat, id 
-            ullamcorper sem ornare non. Morbi quis purus commodo, efficitur eros vitae, auctor enim. Proin sit 
-            amet turpis vel nisl tincidunt cursus at facilisis lorem. In in sem eget nibh pellentesque scelerisque. 
-            Proin ac pretium massa. Suspendisse blandit bibendum auctor. Ut cursus eleifend enim, vitae euismod 
-            magna bibendum a. Pellentesque cursus, turpis nec pulvinar ullamcorper, libero est dignissim turpis, 
-            a convallis ipsum sem sit amet enim."),
+            h4("What is RSEI?"), 
             
-            p("Ut egestas nunc sed faucibus posuere. Suspendisse in risus faucibus, accumsan nibh eget, tincidunt 
-            mi. Vestibulum volutpat velit eu mi pellentesque volutpat. Nullam enim ex, imperdiet vitae est vel, 
-            vehicula malesuada nibh. Nunc eu vestibulum velit. Vivamus tortor ex, faucibus sed libero ac, 
-            malesuada consequat ipsum. Nunc nec nisl eget purus malesuada iaculis."),
+            p("According to the EPA, the \"Risk-Screening Environmental Indicators (RSEI) model helps policy makers, researchers and communities explore data on releases of toxic substances from industrial facilities. RSEI incorporates information from the Toxics Release Inventory (TRI) on the amount of toxic chemicals released, together with factors such as the chemical’s fate and transport through the environment, each chemical’s relative toxicity, and potential human exposure. RSEI Scores can be used to help establish priorities for further investigation.\""),
             
-            p("Nunc ornare, ex ac consequat congue, nibh dolor interdum justo, sed ornare est leo ut 
-              tellus. Aenean sed massa vel nibh fringilla malesuada. Nulla nec rutrum elit. Aenean 
-              cursus nisi dapibus ante consequat, eget scelerisque erat facilisis. Pellentesque rhoncus 
-              mattis nisi quis hendrerit. Aliquam consequat eget eros sed lobortis. Quisque sed elit 
-              sed nisl euismod efficitur et ac ante. Donec ut mauris quis purus feugiat dictum vitae 
-              commodo felis. Aenean semper auctor ultricies. Phasellus id sem et risus tempus mollis. 
-              Cras sit amet mollis nisi. Nulla tempor in lorem in commodo."),
-                
+            p("For more information on RSEI scores and their interpretations, go to", a("https://www.epa.gov/rsei/understanding-rsei-results")),
+            
+            h4("Variables"),
+            
+            p("The variables used in this app are described below. Taken from Aggregated Microdata Table and Census Crosswalk Table."),
+            
+            tags$ul(
+                tags$li(code("X"), ": X-coordinate of grid cell"), 
+                tags$li(code("Y"), ": Y-Coordinate of grid cell"), 
+                tags$li(code("ToxConc"), ": Concentration multiplied by inhalation toxicity weight, summed over all chemicals impacting cell"),
+                tags$li(code("Score"), ": Risk-related score (surrogate dose * toxicity weight * population), summed over all chemicals impacting cell"),
+                tags$li(code("Pop"), ": Population of grid cell"),
+                tags$li(code("ScoreCancer"), ": Risk-related score (surrogate dose * toxicity weight * population) using only toxicity values for cancer effects"),
+                tags$li(code("ScoreNonCancer"), ": Risk-related score (surrogate dose * toxicity weight * population) using only toxicity values for cancer effects"),
+                tags$li(code("Block_ID00"), ": US Census Block ID"),
+                tags$li(code("PCT_B_C"), ": Percent of the Census block that is within the cell (Block to Cell)"),
+                tags$li(code("PCT_C_B"), ": Percent of the cell that is within the Census block (Cell to Block)"),
+                tags$li(code("PCT_PC_B"), ": Percent of the cell’s population that is within the Census block (Population-Cell to Block)")
+            ),
+            
+            p(withMathJax(helpText('Block:  $$RSEI_{Block} = \\sum_{i=1}^{n_{Grids}} \\frac{{Population}_{Block \\cap {Grid}_i}}{\\sum_{j=1}^{n_{Grids}} {Population}_{Block \\cap {Grid}_j}} * RSEI_{{Grid}_i} $$'))),
+            
+            p(withMathJax(helpText('Block Group:  $$RSEI_{BlockGrp} = \\sum_{i=1}^{n_{Blocks}} \\frac{{Population}_{{Block}_i}}{\\sum_{j=1}^{n_{Blocks}} {Population}_{{Block}_j}} * RSEI_{{Grid}_i} $$'))),
+            
             h3("Race and Income Data: American Community Survey (ACS)"),
             
-            p("Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc congue nisl vel magna viverra, 
-            in condimentum purus convallis. Nam ultrices nunc efficitur lectus rutrum pretium. Nulla facilisi. 
-            Sed nec consequat urna. Phasellus pretium tortor vel porta vehicula. Vivamus ornare imperdiet erat, id 
-            ullamcorper sem ornare non. Morbi quis purus commodo, efficitur eros vitae, auctor enim. Proin sit 
-            amet turpis vel nisl tincidunt cursus at facilisis lorem. In in sem eget nibh pellentesque scelerisque. 
-            Proin ac pretium massa. Suspendisse blandit bibendum auctor. Ut cursus eleifend enim, vitae euismod 
-            magna bibendum a. Pellentesque cursus, turpis nec pulvinar ullamcorper, libero est dignissim turpis, 
-            a convallis ipsum sem sit amet enim."),
+            p("According to the US Census Bureau, \"The American Community Survey (ACS) is an ongoing survey that provides vital information on a yearly basis about our nation and its people. Information from the survey generates data that help determine how more than $675 billion in federal and state funds are distributed each year.\""),
             
-            p("Ut egestas nunc sed faucibus posuere. Suspendisse in risus faucibus, accumsan nibh eget, tincidunt 
-            mi. Vestibulum volutpat velit eu mi pellentesque volutpat. Nullam enim ex, imperdiet vitae est vel, 
-            vehicula malesuada nibh. Nunc eu vestibulum velit. Vivamus tortor ex, faucibus sed libero ac, 
-            malesuada consequat ipsum. Nunc nec nisl eget purus malesuada iaculis."),
-            
-            p("Nunc ornare, ex ac consequat congue, nibh dolor interdum justo, sed ornare est leo ut 
-              tellus. Aenean sed massa vel nibh fringilla malesuada. Nulla nec rutrum elit. Aenean 
-              cursus nisi dapibus ante consequat, eget scelerisque erat facilisis. Pellentesque rhoncus 
-              mattis nisi quis hendrerit. Aliquam consequat eget eros sed lobortis. Quisque sed elit 
-              sed nisl euismod efficitur et ac ante. Donec ut mauris quis purus feugiat dictum vitae 
-              commodo felis. Aenean semper auctor ultricies. Phasellus id sem et risus tempus mollis. 
-              Cras sit amet mollis nisi. Nulla tempor in lorem in commodo.")
+            p()
                      
         ), # tabPanel1
         
@@ -106,27 +95,32 @@ shinyUI(
                     hr(),
                     
                     htmlOutput("var_selector_map_rsei"),
-                    
-                    numericInput(inputId = "alpha_rsei", label = "RSEI Opacity:", value = 1,
-                                 min = 0, max = 1, step = 0.1), br(),
                                  
                     htmlOutput("var_selector_map_acs"),
-                    
-                    numericInput(inputId = "alpha_acs", label = "ACS Opacity:", value = 0,
-                                 min = 0, max = 1, step = 0.1),
-                    
+                
                     br(),
                     
                     div(align = "right",
                         actionButton(inputId = "assignattr",
-                                     label = strong("Create map"))),
+                                     label = strong("Create map")))
                     
                     ), # sidebar panel
                      
                 mainPanel(
                     
-                    tags$style(type = "text/css", "#rseimap {height: calc(90vh - 80px) !important;}"),
-                    leafletOutput("rseimap")
+                    column(
+                        width = 6, 
+                        tags$style(type = "text/css", "#rseimap {height: calc(90vh - 80px) !important;}"),
+                        leafletOutput("rseimap")
+                    ),
+                    
+                    column(
+                        width = 6,
+                        tags$style(type = "text/css", "#acsmap {height: calc(90vh - 80px) !important;}"),
+                        leafletOutput("acsmap")
+                    )
+                    
+                    
                     
                     ) # main panel
                  ) # sidebar layout
@@ -159,7 +153,38 @@ shinyUI(
                          
                 ) # main panel
             ) # sidebar layout
-        ) # tabPanel3
+        ), # tabPanel3
+        
+        tabPanel(title = "Model",
+            titlePanel("Create Model"),
+            sidebarLayout(
+                sidebarPanel(width = 3, 
+                             
+                    htmlOutput("state_selector_tr"), #add selectinput boxs
+                    htmlOutput("county_selector_tr"), # from objects created in server
+                    
+                    br(),
+                    
+                    div(align = "right",
+                        actionButton(inputId = "getdata_tr",
+                                     label = strong("Pull data"))),
+                    
+                    hr(),
+                    
+                    htmlOutput("var_selector_tr_rsei"),
+                    htmlOutput("var_selector_tr_acs")
+                    
+                ), # sidebar panel
+                mainPanel(
+                    
+                    tableOutput(outputId = "lmtable")
+                    
+                    
+                ) # main panel
+            ) # sidebarLayout
+            
+            
+        ) # tabPanel4
         
         
     ) # navbarPage
