@@ -1,6 +1,6 @@
-# Investigating Patterns of Environmental Justice: Exploring RSEI, Race, and Poverty Data
+# Exploring Patterns of Environmental Justice: Mapping Pollution, Race, and Income Data
 
-Link to App:
+Link to App: https://ryan-j-h.shinyapps.io/Explore-EJ/ 
 
 ## Introduction
 
