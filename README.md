@@ -20,7 +20,7 @@ https://ryan-j-h.shinyapps.io/Explore-EJ/.
 
 ### Map
 
-![](map.png)
+![](images/map.png)
 
 The Map tab allows users to create side by side maps to see if block groups with 
 particularly high RSEI scores or toxicity concentrations coincide with block 
@@ -32,7 +32,7 @@ state.
 
 ### Table
 
-![](table.png)
+![](images/table.png)
 
 The Table tab allows users to take a look at the data, by selecting the variables 
 they wish to see.
@@ -42,7 +42,7 @@ state.
 
 ### Model
 
-![](model.png)
+![](images/model.png)
 
 The Model tab allows users to run OLS regressions to explore whether any 
 relationships between exposure and demographic characteristics are 
