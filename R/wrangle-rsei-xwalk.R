@@ -26,7 +26,7 @@ rsei_blck <- rseixw_p %>%
   mutate(
     pop_blck = sum(pop_blck_cell),
     toxconc_blck = 
-      dplyr::if_else(round(pop_blck) == 0, 0,
+      dplyr::if_else(round(pop_blck) == 0, 0, # avoid dividing by zero
                 sum(pop_blck_cell / pop_blck * toxconc)),
     score_blck = 
       dplyr::if_else(round(pop_blck) == 0, 0,
@@ -43,7 +43,7 @@ rsei_blck <- rseixw_p %>%
   collect() %>% 
   distinct(blck, blckgrp, .keep_all = TRUE)
 
-fst::write.fst(rsei_blck, "data/rsei_blck.fst", 100)
+# fst::write.fst(rsei_blck, "data/rsei_blck.fst", 100)
 
 rsei_blck_p <- rsei_blck %>% 
   group_by(blckgrp) %>% 
@@ -73,16 +73,4 @@ rsei_blckgrp <- rsei_blck_p %>%
   distinct(blckgrp, .keep_all = TRUE)
 
 fst::write.fst(rsei_blckgrp, "data/rsei_blckgrp.fst", 100)
-
-## read and write files
-# saveRDS(rseixw, "data/rseixw.rds")
-# fst::write.fst(rseixw, "data/rseixw.fst", 100)
-# rseixw <- fst::read.fst("data/rseixw.fst")
-# 
-# rsei <- readRDS("data/rsei_raw.rds")
-# fst::write.fst(rsei, "data/rsei_raw.fst")
-# rsei <- fst::read.fst("data/rsei_raw.fst")
-# 
-# xwalk <- readRDS("data/xwalk_raw.rds")
-# fst::write.fst(xwalk, "data/xwalk_raw.fst")
-# xwalk <- fst::read.fst("data/xwalk_raw.fst")
+saveRDS(rsei_blckgrp, "Explore-EJ/rsei.rds")
