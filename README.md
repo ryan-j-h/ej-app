@@ -13,6 +13,9 @@ pollution, as measured by the EPA's Risk Screening Environmental Indicators
 tool, may correspond with demographic characteristics of race and income, as 
 measured by the American Community Survey.
 
+This app was created as an individual project for STA 323: Statistical Programming
+at Duke University during the Summer 2020 term.
+
 ## About the App
 
 Read more about the data and the variables used on the app's homepage at 
